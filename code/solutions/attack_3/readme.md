@@ -40,6 +40,8 @@ The id `eiunrg9ea8gnq780b4387` is used to check if the script is still in the de
 
 When a webhook is received, it should be visible in webhook.site's JSON path: https://webhook.site/token/c60e8309-2035-4484-8777-121da40750d6/requests?page=1&password=&query=&sorting=newest
 
+***NOTE:** The webhook url currently used will expire 2023-12-16 05:52:35. You need to update the url if you want to test it after that time period*
+
 Located in `data["data"][0]["query"]["key"]`.
 
 The python script should then print the password in the terminal: `jeg!Har%Mest&LystTil&At%Være-En-Hacker`
