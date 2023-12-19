@@ -1,4 +1,4 @@
-# The Python script for Attack 4
+# The Python script for Attack 5
 
 import requests
 import argparse
@@ -9,6 +9,11 @@ import binascii
 from bs4 import BeautifulSoup
 
 def verify_ssh_key(ssh_key_path):
+    """
+    Edited implementation of Piyush Bansal's ssh key verification
+    Script: https://gist.github.com/piyushbansal/5243418
+    Author: https://github.com/piyushbansal
+    """
     try:
         key = open(ssh_key_path).read()
     except FileNotFoundError:
